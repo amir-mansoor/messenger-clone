@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 import "./App.css";
-import { Toaster } from "./components/ui/toaster";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const location = useLocation();
@@ -10,7 +11,7 @@ function App() {
   const appClass = isChatScreen ? "no-container" : "container";
   return (
     <div className={`${appClass} mx-auto`}>
-      <Toaster />
+      <ToastContainer />
 
       <Outlet />
     </div>
