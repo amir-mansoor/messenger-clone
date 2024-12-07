@@ -8,6 +8,7 @@ const baseQuery = fetchBaseQuery({
 
 async function fetchBaseQueryWithAuth(args, api, extra) {
   const result = await baseQuery(args, api, extra);
+
   return result;
 }
 

@@ -4,6 +4,10 @@ import generateToken from "../utils/token.js";
 
 const register = asyncHandler(async (req, res) => {
   const { name, number, password } = req.body;
+  if (name.trim() === "" || number.trim() === "" || password.trim() === "") {
+    res.status(400);
+    throw new Error("All fields are required");
+  }
   const exist = await User.findOne({ phoneNumber: number });
   if (exist) {
     res.status(400);
@@ -27,6 +31,11 @@ const register = asyncHandler(async (req, res) => {
 
 const login = asyncHandler(async (req, res) => {
   const { number, password } = req.body;
+
+  if (number.trim() === "" || password.trim() === "") {
+    res.status(400);
+    throw new Error("All fields are required");
+  }
   const user = await User.findOne({ phoneNumber: number });
 
   if (user && (await user.matchPassword(password))) {

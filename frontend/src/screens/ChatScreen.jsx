@@ -22,16 +22,32 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage } from "@/slices/messageSlice";
 import { useState } from "react";
+import { useLogoutMutation } from "@/slices/userApiSlice";
+import { useNavigate } from "react-router-dom";
+import { logoutReducer } from "@/slices/authSlice";
 
 const ChatScreen = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const { messages } = useSelector((state) => state.messages);
+
+  const [logout] = useLogoutMutation();
 
   const handleMessage = (e) => {
     e.preventDefault();
 
     dispatch(addMessage({ message, role: "user" }));
+  };
+
+  const handleLogout = async () => {
+    try {
+      const res = await logout();
+      dispatch(logoutReducer());
+      navigate("/");
+    } catch (err) {
+      console.log(err?.data?.message || err.error);
+    }
   };
   return (
     <div className="flex h-screen overflow-y-hidden">
@@ -41,7 +57,7 @@ const ChatScreen = () => {
           <h1 className="font-bold text-xl">Chats</h1>
           <div className="flex space-x-2">
             <MessageSquareDiffIcon />
-            <LogOut />
+            <LogOut onClick={handleLogout} className="cursor-pointer" />
           </div>
         </div>
 

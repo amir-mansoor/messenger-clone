@@ -1,24 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ConversationSvg from "../assets/conversation.jpg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useRegisterMutation } from "@/slices/userApiSlice";
 import { toast } from "react-toastify";
+import { setCredentials } from "@/slices/authSlice";
+import { useDispatch } from "react-redux";
 
 const RegisterScreen = () => {
   const [register, { isLoading, error }] = useRegisterMutation();
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
   const [password, setPassword] = useState("");
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await register({ name, number, password });
-    } catch (error) {
-      console.log(error?.data?.message);
-      toast.error(error?.data?.message || error.error);
+      const res = await register({ name, number, password }).unwrap();
+      dispatch(setCredentials({ ...res }));
+      navigate("/chats");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
     }
   };
   return (
