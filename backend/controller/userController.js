@@ -23,6 +23,7 @@ const register = asyncHandler(async (req, res) => {
   if (user) {
     generateToken(res, user._id);
     res.status(201).json({
+      id: user._id,
       name: user.name,
       phoneNumber: user.phoneNumber,
     });
@@ -41,6 +42,7 @@ const login = asyncHandler(async (req, res) => {
   if (user && (await user.matchPassword(password))) {
     generateToken(res, user._id);
     res.status(200).json({
+      id: user._id,
       name: user.name,
       phoneNumber: user.phoneNumber,
     });
