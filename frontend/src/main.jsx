@@ -18,6 +18,7 @@ import { Provider } from "react-redux";
 import store from "./store.js";
 import AuthRoutes from "./components/AuthRoutes";
 import ProtectedRoutes from "./components/ProtectedRoutes";
+import SocketProvider from "./context/SocketContext";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -37,9 +38,11 @@ const router = createBrowserRouter(
 );
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <Provider store={store}>
+  // <StrictMode>
+  <Provider store={store}>
+    <SocketProvider>
       <RouterProvider router={router}></RouterProvider>
-    </Provider>
-  </StrictMode>
+    </SocketProvider>
+  </Provider>
+  // </StrictMode>
 );

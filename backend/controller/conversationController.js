@@ -13,7 +13,7 @@ const createConversation = asyncHandler(async (req, res) => {
 const getMyConversations = asyncHandler(async (req, res) => {
   const conversations = await Conversation.find({
     members: { $in: [req.user._id] },
-  });
+  }).populate("members", "name phoneNumber _id");
 
   res.json(conversations);
 });

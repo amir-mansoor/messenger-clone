@@ -9,11 +9,26 @@ const messagesSlice = createSlice({
   name: "messages",
   initialState,
   reducers: {
-    addMessage: (state, action) => {
+    setMessages: (state, action) => {
+      const flattendMessages = action.payload.flat();
+      state.messages = [...state.messages, ...flattendMessages];
+    },
+
+    updateConversation: (state, action) => {
+      state.chatId = action.payload;
+      state.messages = [];
+    },
+
+    clearMessages: (state, action) => {
+      state.messages = [];
+    },
+
+    appendMessage: (state, action) => {
       state.messages.push(action.payload);
     },
   },
 });
 
-export const { addMessage } = messagesSlice.actions;
+export const { setMessages, updateConversation, clearMessages, appendMessage } =
+  messagesSlice.actions;
 export default messagesSlice.reducer;

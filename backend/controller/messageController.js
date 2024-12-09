@@ -16,7 +16,7 @@ const sendMessage = asyncHandler(async (req, res) => {
 
 const getMessagesByConversation = asyncHandler(async (req, res) => {
   const messages = await Message.find({
-    conversationId: req.body.conversationId,
+    conversationId: req.params.conversationId,
   });
   res.json(messages);
 });
