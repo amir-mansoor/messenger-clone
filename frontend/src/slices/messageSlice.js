@@ -21,6 +21,7 @@ const messagesSlice = createSlice({
 
     clearMessages: (state, action) => {
       state.messages = [];
+      state.chatId = "";
     },
 
     appendMessage: (state, action) => {

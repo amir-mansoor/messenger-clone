@@ -38,10 +38,15 @@ import {
 import { toast } from "react-toastify";
 import ChatList from "@/components/ChatList";
 import { SocketContext } from "@/context/SocketContext";
+import ChatHeader from "@/components/ChatHeader";
 
 const ChatScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [logout] = useLogoutMutation();
+
+  const { data: chats } = useGetChatsQuery();
 
   const { socket } = useContext(SocketContext);
 
@@ -63,10 +68,12 @@ const ChatScreen = () => {
   const [sendMessage] = useSendMessageMutation();
   const [text, setText] = useState("");
   const [arivalMessage, setArivalMessage] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const [logout] = useLogoutMutation();
-
-  const { data: chats } = useGetChatsQuery();
+  const filteredChats = chats?.filter((chat) => {
+    const user = chat.members.find((member) => member._id !== userInfo.id);
+    return user?.phoneNumber.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   const {
     data: messagesData,
@@ -84,6 +91,9 @@ const ChatScreen = () => {
   }, [messagesData, dispatch]);
 
   const updateChat = async (conversationId) => {
+    if (chatId == conversationId) {
+      return;
+    }
     dispatch(clearMessages());
 
     dispatch(updateConversation(conversationId));
@@ -162,15 +172,27 @@ const ChatScreen = () => {
             type="text"
             placeholder="Search"
             className="w-full bg-transparent outline-none ml-2 text-black"
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
-        <ChatList
+        {/* <ChatList
           userInfo={userInfo}
           chats={chats}
           updateChat={updateChat}
           chatId={chatId}
-        />
+        /> */}
+
+        {filteredChats?.length === 0 && searchQuery ? (
+          <p className="text-gray-500 text-center mt-4">No chats found</p>
+        ) : (
+          <ChatList
+            userInfo={userInfo}
+            chats={filteredChats}
+            updateChat={updateChat}
+            chatId={chatId}
+          />
+        )}
       </div>
 
       {/* Right Pane (Messages Box) */}
@@ -178,49 +200,7 @@ const ChatScreen = () => {
         {chatId ? (
           <>
             {/* Header */}
-            <div className="backdrop-brightness-125 p-2 flex items-center justify-between">
-              <Dialog>
-                <DialogTrigger>
-                  <div className="flex items-center">
-                    <div className="flex items-center justify-center bg-gray-800 text-white h-12 w-12 font-bold text-xl rounded-full">
-                      M
-                    </div>
-                    <h1 className="ml-2 text-white">Amir Mansoor</h1>
-                  </div>
-                </DialogTrigger>
-                <DialogContent className="bg-gray-800 text-white">
-                  <DialogHeader>
-                    <DialogTitle>
-                      <div className="flex items-center">
-                        <div className="flex items-center justify-center bg-gray-700 text-white h-12 w-12 font-bold text-xl rounded-full">
-                          M
-                        </div>
-                        <div className="ml-2">
-                          <h1>Amir Mansoor</h1>
-                          <p className="mt-2 font-thin text-sm">0349 9519620</p>
-                        </div>
-                      </div>
-                    </DialogTitle>
-                    <DialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your account and remove your data from our servers.
-                    </DialogDescription>
-                  </DialogHeader>
-                </DialogContent>
-              </Dialog>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger className="outline-none">
-                  <MoreVertical color="white" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-gray-800 text-white w-[200px]">
-                  <DropdownMenuItem>Contact Info</DropdownMenuItem>
-                  <DropdownMenuItem>Close Chat</DropdownMenuItem>
-                  <DropdownMenuItem>Delete Chat</DropdownMenuItem>
-                  <DropdownMenuItem>Report Chat</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <ChatHeader currentChat={currentChat} loginUser={userInfo.id} />
 
             {/* Scrollable Messages */}
             {isFetching ? (
