@@ -65,6 +65,7 @@ const getUser = (userId) => {
 io.on("connection", (socket) => {
   socket.on("addUser", (userId) => {
     addUser(userId, socket.id);
+    io.emit("getUsers", users);
   });
 
   socket.on("sendMessage", (data) => {
@@ -80,6 +81,7 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     removeUser(socket.id);
+    io.emit("getUsers", users);
   });
 });
 
