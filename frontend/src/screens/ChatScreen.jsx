@@ -35,6 +35,7 @@ const ChatScreen = () => {
   const [currentChat, setCurrentChat] = useState(null);
   const messagesEndRef = useRef(null);
 
+  // fetch chats on component load
   const { data: chats } = useGetChatsQuery();
 
   const { socket } = useContext(SocketContext);
@@ -52,7 +53,7 @@ const ChatScreen = () => {
     }
   }, [messages, chatId]);
 
-  // Search the chats with phone number
+  // Search the current chats with phone number
   const filteredChats = chats?.filter((chat) => {
     const user = chat.members.find((member) => member._id !== userInfo.id);
     return user?.phoneNumber.toLowerCase().includes(searchQuery.toLowerCase());
@@ -78,12 +79,6 @@ const ChatScreen = () => {
     socket.on("getMessage", (data) => {
       setArivalMessage(data);
       scrollToBottom();
-    });
-  }, []);
-
-  useEffect(() => {
-    socket.on("getUsers", (users) => {
-      console.log(users);
     });
   }, []);
 

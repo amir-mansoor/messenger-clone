@@ -1,23 +1,40 @@
-import { createContext, useEffect } from "react";
+import { createContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { io } from "socket.io-client";
 
 export const SocketContext = createContext();
-const socket = io("http://localhost:5000");
+const socket = io("http://localhost:5000"); // Initialize the socket once outside the component
 
 const SocketProvider = ({ children }) => {
   const { userInfo } = useSelector((state) => state.auth);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+
   useEffect(() => {
     socket.on("connect", () => {
-      if (userInfo) {
-        socket.emit("addUser", userInfo.id);
-      }
+      console.log("Socket connected");
     });
 
-    socket.on("disconnect", () => {});
+    socket.on("disconnect", () => {
+      console.log("Socket disconnected");
+    });
+
+    socket.on("getUsers", (users) => {
+      setOnlineUsers(users);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
+
+  useEffect(() => {
+    if (userInfo?.id) {
+      socket.emit("addUser", userInfo.id);
+    }
+  }, [userInfo]);
+
   return (
-    <SocketContext.Provider value={{ socket }}>
+    <SocketContext.Provider value={{ socket, onlineUsers }}>
       {children}
     </SocketContext.Provider>
   );

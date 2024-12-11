@@ -13,13 +13,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateConversation } from "@/slices/messageSlice";
+import { SocketContext } from "@/context/SocketContext";
 
 const ChatHeader = ({ currentChat, loginUser }) => {
   const [user, setUser] = useState(null);
   const dispatch = useDispatch();
+
+  const { onlineUsers } = useContext(SocketContext);
 
   useEffect(() => {
     if (currentChat) {
@@ -27,6 +30,8 @@ const ChatHeader = ({ currentChat, loginUser }) => {
       setUser(user);
     }
   }, [currentChat]);
+
+  const isOnline = onlineUsers?.some((u) => u.userId === user?._id);
 
   return (
     <div className="backdrop-brightness-125 p-2 flex items-center justify-between">
@@ -37,6 +42,9 @@ const ChatHeader = ({ currentChat, loginUser }) => {
               {user?.name[0]}
             </div>
             <h1 className="ml-2 text-white capitalize">{user?.name}</h1>
+            {isOnline && (
+              <span className="bg-green-400 w-3 h-3 rounded-full ml-2"></span>
+            )}
           </div>
         </DialogTrigger>
         <DialogContent className="bg-gray-800 text-white">
