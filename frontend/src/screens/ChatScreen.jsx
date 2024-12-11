@@ -1,5 +1,3 @@
-import { LogOut, MessageSquareDiffIcon, Search } from "lucide-react";
-
 import { useDispatch, useSelector } from "react-redux";
 import {
   setMessages,
@@ -17,10 +15,11 @@ import {
   useSendMessageMutation,
 } from "@/slices/messageApiSlice";
 import { toast } from "react-toastify";
-import ChatList from "@/components/ChatList";
+
 import { SocketContext } from "@/context/SocketContext";
 import ChatHeader from "@/components/ChatHeader";
 import Loader from "@/components/Loader";
+import LeftPanel from "@/components/LeftPanel";
 
 const ChatScreen = () => {
   const dispatch = useDispatch();
@@ -33,6 +32,7 @@ const ChatScreen = () => {
   const [arivalMessage, setArivalMessage] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentChat, setCurrentChat] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
   // fetch chats on component load
@@ -92,7 +92,7 @@ const ChatScreen = () => {
   useEffect(() => {
     if (arivalMessage) {
       // this ensure that the arivalmessage sender is one of the participants of the current chat it prevents unrelated messages
-      const userExists = currentChat.members.find(
+      const userExists = currentChat?.members.find(
         (user) => user._id === arivalMessage.sender
       );
       if (userExists) {
@@ -151,7 +151,7 @@ const ChatScreen = () => {
   return (
     <div className="flex overflow-y-hidden">
       {/* Left Pane */}
-      <div className="flex-[0.2] w-full p-2 bg-gray-800 text-white overflow-y-auto h-screen">
+      {/* <div className="flex-[0.2] w-full p-2 bg-gray-800 text-white overflow-y-auto h-screen">
         <div className="flex justify-between items-center">
           <h1 className="font-bold text-xl">Chats</h1>
           <div className="flex space-x-2">
@@ -180,7 +180,17 @@ const ChatScreen = () => {
             chatId={chatId}
           />
         )}
-      </div>
+      </div> */}
+
+      <LeftPanel
+        handleLogout={handleLogout}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        filteredChats={filteredChats}
+        userInfo={userInfo}
+        updateChat={updateChat}
+        chatId={chatId}
+      />
 
       {/* Right Pane (Messages Box) */}
       <div className="flex-[0.8] bg-gray-700 flex flex-col h-screen">
