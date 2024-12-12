@@ -20,6 +20,8 @@ import { SocketContext } from "@/context/SocketContext";
 import ChatHeader from "@/components/ChatHeader";
 import Loader from "@/components/Loader";
 import LeftPanel from "@/components/LeftPanel";
+import EmojiPicker from "emoji-picker-react";
+import { Smile } from "lucide-react";
 
 const ChatScreen = () => {
   const dispatch = useDispatch();
@@ -32,8 +34,13 @@ const ChatScreen = () => {
   const [arivalMessage, setArivalMessage] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentChat, setCurrentChat] = useState(null);
-  const [isTyping, setIsTyping] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const emojiPickerRef = useRef(null);
   const messagesEndRef = useRef(null);
+
+  const handleEmoji = (emoji) => {
+    setText((prev) => (prev += emoji.emoji));
+  };
 
   // fetch chats on component load
   const { data: chats } = useGetChatsQuery();
@@ -151,36 +158,6 @@ const ChatScreen = () => {
   return (
     <div className="flex overflow-y-hidden">
       {/* Left Pane */}
-      {/* <div className="flex-[0.2] w-full p-2 bg-gray-800 text-white overflow-y-auto h-screen">
-        <div className="flex justify-between items-center">
-          <h1 className="font-bold text-xl">Chats</h1>
-          <div className="flex space-x-2">
-            <MessageSquareDiffIcon />
-            <LogOut onClick={handleLogout} className="cursor-pointer" />
-          </div>
-        </div>
-
-        <div className="flex items-center mt-4 bg-gray-400 px-2 py-1 rounded-md">
-          <Search color="black" />
-          <input
-            type="text"
-            placeholder="Search"
-            className="w-full bg-transparent outline-none ml-2 text-black"
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-
-        {filteredChats?.length === 0 && searchQuery ? (
-          <p className="text-gray-500 text-center mt-4">No chats found</p>
-        ) : (
-          <ChatList
-            userInfo={userInfo}
-            chats={filteredChats}
-            updateChat={updateChat}
-            chatId={chatId}
-          />
-        )}
-      </div> */}
 
       <LeftPanel
         handleLogout={handleLogout}
@@ -231,7 +208,22 @@ const ChatScreen = () => {
 
             {/* Input Section */}
             <div className="w-full bg-gray-600 p-4">
-              <form onSubmit={handleMessage} className="flex">
+              <form onSubmit={handleMessage} className="flex items-center">
+                <div className="mr-2">
+                  <Smile onClick={() => setShowEmojiPicker(!showEmojiPicker)} />
+                  {showEmojiPicker && (
+                    <div
+                      className="absolute bottom-24"
+                      id="emoji-box"
+                      ref={emojiPickerRef}
+                    >
+                      <EmojiPicker
+                        onEmojiClick={(emoji) => handleEmoji(emoji)}
+                        theme="dark"
+                      />
+                    </div>
+                  )}
+                </div>
                 <input
                   type="text"
                   value={text}
