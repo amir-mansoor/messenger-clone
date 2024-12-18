@@ -43,7 +43,11 @@ const ChatScreen = () => {
   };
 
   // fetch chats on component load
-  const { data: chats } = useGetChatsQuery();
+  const {
+    data: chats,
+    isLoading: isChatsLoading,
+    isError: isChatsError,
+  } = useGetChatsQuery();
 
   const { socket } = useContext(SocketContext);
 
@@ -167,6 +171,8 @@ const ChatScreen = () => {
         userInfo={userInfo}
         updateChat={updateChat}
         chatId={chatId}
+        isLoading={isChatsLoading}
+        isError={isChatsError}
       />
 
       {/* Right Pane (Messages Box) */}

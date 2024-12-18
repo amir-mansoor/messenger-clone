@@ -1,5 +1,6 @@
 import { BASE_URL } from "@/constants";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { logoutReducer } from "./authSlice";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: BASE_URL,
@@ -8,7 +9,9 @@ const baseQuery = fetchBaseQuery({
 
 async function fetchBaseQueryWithAuth(args, api, extra) {
   const result = await baseQuery(args, api, extra);
-
+  if (result.error && result.status == 401) {
+    api.dispatch(logoutReducer());
+  }
   return result;
 }
 
